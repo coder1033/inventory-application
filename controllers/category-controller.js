@@ -3,9 +3,8 @@ const async = require("async");
 const { validationResult } = require("express-validator");
 
 // local imports
-const Item = require("../models/item");
 const Category = require("../models/category");
-const { item_list } = require("./item-controller");
+const Item = require("../models/item");
 
 // Display list of all Category.
 exports.category_list = function (req, res, next) {
@@ -42,7 +41,7 @@ exports.category_detail = function (req, res, next) {
       }
       if (results.category == null) {
         // No results.
-        var err = new Error("Genre not found");
+        const err = new Error("Genre not found");
         err.status = 404;
         return next(err);
       }
@@ -68,7 +67,7 @@ exports.category_create_post = function (req, res, next) {
   const errors = validationResult(req);
 
   // Create a category object with escaped and trimmed data.
-  var category = new Category({ name, description });
+  const category = new Category({ name, description });
 
   if (!errors.isEmpty()) {
     // There are errors. Render the form again with sanitized values/error messages.

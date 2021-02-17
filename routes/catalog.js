@@ -1,9 +1,9 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 
 // Require controller modules.
-var category_controller = require("../controllers/category-controller");
-var item_controller = require("../controllers/item-controller");
+const category_controller = require("../controllers/category-controller");
+const item_controller = require("../controllers/item-controller");
 
 // Require validator modules.
 const category_validator = require("../validators/category-validator");
