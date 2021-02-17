@@ -1,9 +1,8 @@
 extends layout
 
 block content
-  h1 #{title}
+  h1 #{title}: #{item.name}
   hr
-
   p #[strong Category: ]
     a(href=item.category.url) #{item.category.name}
   p #[strong Price: ] #{item.price}
@@ -11,5 +10,8 @@ block content
   p #[strong Description: ] #{item.description}
   
   hr
-  p
-    a(href=item.url+'/delete') Delete Item
+
+  p Do you really want to delete this Book Copy?
+
+  form(method='POST' action='')
+    button.btn.btn-danger(type='submit') Delete
