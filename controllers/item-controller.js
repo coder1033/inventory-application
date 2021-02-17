@@ -114,13 +114,33 @@ exports.item_create_post = function (req, res, next) {
 };
 
 // Display item delete form on GET.
-exports.item_delete_get = function (req, res) {
-  res.send("NOT IMPLEMENTED: item delete GET");
+exports.item_delete_get = function (req, res, next) {
+  const { id } = req.params;
+  Item.findById(id)
+    .populate("category")
+    .exec(function (err, item) {
+      if (err) {
+        return next(err);
+      }
+      if (item == null) {
+        // no result
+        res.redirect("/catalog/items");
+      }
+      // Successful, so render.
+      res.render("item_delete", { title: "Delete Item", item: item });
+    });
 };
 
 // Handle item delete on POST.
-exports.item_delete_post = function (req, res) {
-  res.send("NOT IMPLEMENTED: item delete POST");
+exports.item_delete_post = function (req, res, next) {
+  const { id } = req.params;
+  Item.findByIdAndRemove(id, function deleteItem(err) {
+    if (err) {
+      return next(err);
+    }
+    // Success - go to bookinstance list
+    res.redirect("/catalog/items");
+  });
 };
 
 // Display item update form on GET.
