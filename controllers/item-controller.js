@@ -1,6 +1,6 @@
 // npm packages
 const async = require("async");
-const {validationResult} = require("express-validator");
+const { validationResult } = require("express-validator");
 
 // local imports
 const Category = require("../models/category");
@@ -41,32 +41,38 @@ exports.item_list = function (req, res, next) {
 
 // Display detail page for a specific item.
 exports.item_detail = function (req, res, next) {
-    const {id} = req.params;
-    Item.findById(id).populate("category").exec(function(err, item){
-        if(err){return next(err);}
-        if (item==null) {
-            const err = new Error("Item not found");
-            err.status = 404;
-            return next(err);
-        }
-        // Successful, so render.
-        res.render('item_detail', { title: item.name, item: item } );
-    })
+  const { id } = req.params;
+  Item.findById(id)
+    .populate("category")
+    .exec(function (err, item) {
+      if (err) {
+        return next(err);
+      }
+      if (item == null) {
+        const err = new Error("Item not found");
+        err.status = 404;
+        return next(err);
+      }
+      // Successful, so render.
+      res.render("item_detail", { title: item.name, item: item });
+    });
 };
 
 // Display item create form on GET.
 exports.item_create_get = function (req, res) {
-    Category.find().exec(function(err, categories){
-        if(err){return next(err);}
-        res.render('item_form', { title: 'Create item', categories: categories });
-    })
+  Category.find().exec(function (err, categories) {
+    if (err) {
+      return next(err);
+    }
+    res.render("item_form", { title: "Create item", categories: categories });
+  });
 };
 
 // Handle item create on POST.
 exports.item_create_post = function (req, res, next) {
-    const {name, category, description, price, quantity} = req.body;
+  const { name, category, description, price, quantity } = req.body;
 
-    // Extract the validation errors from a request.
+  // Extract the validation errors from a request.
   const errors = validationResult(req);
 
   // Create a Item object with escaped and trimmed data.
@@ -82,16 +88,18 @@ exports.item_create_post = function (req, res, next) {
     // There are errors. Render form again with sanitized values/error messages.
 
     // Get all categories for form.
-    Category.find().exec(function(err, categories) {
-        if (err) { return next(err); }
+    Category.find().exec(function (err, categories) {
+      if (err) {
+        return next(err);
+      }
 
-        res.render("item_form", {
-            title: "Create Item",
-            categories: categories,
-            item: item,
-            errors: errors.array(),
-          });        
-    })
+      res.render("item_form", {
+        title: "Create Item",
+        categories: categories,
+        item: item,
+        errors: errors.array(),
+      });
+    });
     return;
   } else {
     // Data from form is valid. Save item.
