@@ -2,7 +2,6 @@ extends layout
 
 block content
 	h1 #{title}
-	
 	form(method='POST' action='')
 		div.form-group
 			if errors
@@ -12,5 +11,5 @@ block content
 			label(for='name') #[h5 Category:]
 			input#name.form-control.mb-3(type='text', placeholder='Cricket, Baseball etc.' name='name' value=(undefined===category ? '' : category.name))
 			label(for='description') #[h5 Description:]
-			textarea#description.form-control(type='textarea', placeholder='About category...' name='description' value=(undefined===category ? '' : category.description))
+			textarea#description.form-control(type='textarea', placeholder='About category...' name='description') #{undefined===category ? '' : category.description}
 			button.btn.btn-primary.mt-3(type='submit') Submit

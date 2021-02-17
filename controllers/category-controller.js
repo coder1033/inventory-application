@@ -173,11 +173,72 @@ exports.category_delete_post = function (req, res) {
 };
 
 // Display Category update form on GET.
-exports.category_update_get = function (req, res) {
-  res.send("NOT IMPLEMENTED: Category update GET");
+exports.category_update_get = function (req, res, next) {
+  const { id } = req.params;
+
+  Category.findById(id).exec(function (err, category) {
+    if (err) {
+      return next(err);
+    }
+    if (category == null) {
+      // no result.
+      const err = new Error("Category Not Found");
+      err.status = 404;
+      return next(err);
+    }
+    res.render("category_form", {
+      title: "Update Category",
+      category: category,
+    });
+  });
 };
 
 // Handle Category update on POST.
 exports.category_update_post = function (req, res) {
-  res.send("NOT IMPLEMENTED: Category update POST");
+  const { id } = req.params;
+  const { name, description } = req.body;
+  // Extract the validation errors from a request.
+  const errors = validationResult(req);
+
+  // Create a Category object with escaped/trimmed data and old id.
+  const category = new Category({
+    name,
+    description,
+    _id: id, //This is required, or a new ID will be assigned!
+  });
+  if (!errors.isEmpty()) {
+    // There are errors. Render the form again with sanitized values/error messages.
+    res.render("category_form", {
+      title: "Create category",
+      category: category,
+      errors: errors.array(),
+    });
+    return;
+  } else {
+    // Data from form is valid.
+    // Check if category with same name already exists.
+    Category.findOne({ name }).exec(function (err, found_category) {
+      if (err) {
+        return next(err);
+      }
+
+      if (found_category) {
+        // category exists, redirect to its detail page.
+        res.redirect(found_category.url);
+      } else {
+        Category.findByIdAndUpdate(
+          id,
+          category,
+          {},
+          function (err, thecategory) {
+            if (err) {
+              return next(err);
+            }
+            // Successful - redirect to category detail page.
+            res.redirect(thecategory.url);
+          }
+        );
+      }
+    });
+  }
 };
