@@ -1,5 +1,6 @@
 // npm packages
 const async = require("async");
+const {validationResult} = require("express-validator");
 
 // local imports
 const Category = require("../models/category");
@@ -55,12 +56,53 @@ exports.item_detail = function (req, res, next) {
 
 // Display item create form on GET.
 exports.item_create_get = function (req, res) {
-  res.send("NOT IMPLEMENTED: item create GET");
+    Category.find().exec(function(err, categories){
+        if(err){return next(err);}
+        res.render('item_form', { title: 'Create item', categories: categories });
+    })
 };
 
 // Handle item create on POST.
-exports.item_create_post = function (req, res) {
-  res.send("NOT IMPLEMENTED: item create POST");
+exports.item_create_post = function (req, res, next) {
+    const {name, category, description, price, quantity} = req.body;
+
+    // Extract the validation errors from a request.
+  const errors = validationResult(req);
+
+  // Create a Item object with escaped and trimmed data.
+  const item = new Item({
+    name,
+    category,
+    description,
+    price,
+    quantity,
+  });
+
+  if (!errors.isEmpty()) {
+    // There are errors. Render form again with sanitized values/error messages.
+
+    // Get all categories for form.
+    Category.find().exec(function(err, categories) {
+        if (err) { return next(err); }
+
+        res.render("item_form", {
+            title: "Create Item",
+            categories: categories,
+            item: item,
+            errors: errors.array(),
+          });        
+    })
+    return;
+  } else {
+    // Data from form is valid. Save item.
+    item.save(function (err) {
+      if (err) {
+        return next(err);
+      }
+      //successful - redirect to new item record.
+      res.redirect(item.url);
+    });
+  }
 };
 
 // Display item delete form on GET.
