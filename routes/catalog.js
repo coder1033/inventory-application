@@ -5,6 +5,9 @@ var router = express.Router();
 var category_controller = require('../controllers/category-controller');
 var item_controller = require('../controllers/item-controller');
 
+// Require validator modules.
+const category_validator = require("../validators/category-validator");
+
 /// Item ROUTES ///
 
 // GET catalog home page.
@@ -41,7 +44,7 @@ router.get('/items', item_controller.item_list);
 router.get('/category/create', category_controller.category_create_get);
 
 //POST request for creating category.
-router.post('/category/create', category_controller.category_create_post);
+router.post('/category/create', category_validator.category_create, category_controller.category_create_post);
 
 // GET request to delete category.
 router.get('/category/:id/delete', category_controller.category_delete_get);
