@@ -194,7 +194,7 @@ exports.category_update_get = function (req, res, next) {
 };
 
 // Handle Category update on POST.
-exports.category_update_post = function (req, res) {
+exports.category_update_post = function (req, res, next) {
   const { id } = req.params;
   const { name, description } = req.body;
   // Extract the validation errors from a request.
@@ -209,7 +209,7 @@ exports.category_update_post = function (req, res) {
   if (!errors.isEmpty()) {
     // There are errors. Render the form again with sanitized values/error messages.
     res.render("category_form", {
-      title: "Create category",
+      title: "Update category",
       category: category,
       errors: errors.array(),
     });

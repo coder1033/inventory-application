@@ -59,7 +59,7 @@ exports.item_detail = function (req, res, next) {
 };
 
 // Display item create form on GET.
-exports.item_create_get = function (req, res) {
+exports.item_create_get = function (req, res, next) {
   Category.find().exec(function (err, categories) {
     if (err) {
       return next(err);
@@ -145,10 +145,78 @@ exports.item_delete_post = function (req, res, next) {
 
 // Display item update form on GET.
 exports.item_update_get = function (req, res) {
-  res.send("NOT IMPLEMENTED: item update GET");
+  const { id } = req.params;
+
+  async.parallel(
+    {
+      item: function (callback) {
+        Item.findById(id).populate("category").exec(callback);
+      },
+      categories: function (callback) {
+        Category.find().exec(callback);
+      },
+    },
+    function (err, results) {
+      if (err) {
+        return next(err);
+      }
+      if (results.item == null) {
+        // no result.
+        const err = new Error("Item Not Found");
+        err.status = 404;
+        return next(err);
+      }
+      res.render("item_form", {
+        title: "Update Item",
+        categories: results.categories,
+        item: results.item,
+      });
+    }
+  );
 };
 
 // Handle item update on POST.
 exports.item_update_post = function (req, res) {
-  res.send("NOT IMPLEMENTED: item update POST");
+  const { id } = req.params;
+  const { name, category, description, price, quantity } = req.body;
+
+  // Extract the validation errors from a request.
+  const errors = validationResult(req);
+
+  // Create a Item object with escaped/trimmed data and old id.
+  const item = new Item({
+    name,
+    category,
+    description,
+    price,
+    quantity,
+    _id: id, //This is required, or a new ID will be assigned!
+  });
+
+  if (!errors.isEmpty()) {
+    // There are errors. Render the form again with sanitized values/error messages.
+
+    // Get all categories for form.
+    Category.find().exec(function (err, categories) {
+      if (err) {
+        return next(err);
+      }
+      res.render("item_form", {
+        title: "Upate Item",
+        categories: categories,
+        item: item,
+        errors: errors.array(),
+      });
+    });
+    return;
+  } else {
+    // Data from form is valid.
+    Item.findByIdAndUpdate(id, item, {}, function (err, theitem) {
+      if (err) {
+        return next(err);
+      }
+      // Successful - redirect to item detail page.
+      res.redirect(theitem.url);
+    });
+  }
 };
