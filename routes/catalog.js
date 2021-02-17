@@ -7,6 +7,7 @@ var item_controller = require('../controllers/item-controller');
 
 // Require validator modules.
 const category_validator = require("../validators/category-validator");
+const item_validator = require("../validators/item-validator");
 
 /// Item ROUTES ///
 
@@ -17,7 +18,7 @@ router.get('/', item_controller.index);
 router.get('/item/create', item_controller.item_create_get);
 
 // POST request for creating item.
-router.post('/item/create', item_controller.item_create_post);
+router.post('/item/create', item_validator.item_create, item_controller.item_create_post);
 
 // GET request to delete item.
 router.get('/item/:id/delete', item_controller.item_delete_get);
