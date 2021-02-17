@@ -39,8 +39,18 @@ exports.item_list = function (req, res, next) {
 };
 
 // Display detail page for a specific item.
-exports.item_detail = function (req, res) {
-  res.send("NOT IMPLEMENTED: item detail: " + req.params.id);
+exports.item_detail = function (req, res, next) {
+    const {id} = req.params;
+    Item.findById(id).populate("category").exec(function(err, item){
+        if(err){return next(err);}
+        if (item==null) {
+            const err = new Error("Item not found");
+            err.status = 404;
+            return next(err);
+        }
+        // Successful, so render.
+        res.render('item_detail', { title: item.name, item: item } );
+    })
 };
 
 // Display item create form on GET.

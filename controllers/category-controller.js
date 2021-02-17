@@ -24,14 +24,15 @@ exports.category_list = function(req, res, next) {
 
 // Display detail page for a specific Category.
 exports.category_detail = function(req, res, next) {
+    const {id} = req.params;
     async.parallel({
         category: function(callback) {
-            Category.findById(req.params.id)
+            Category.findById(id)
               .exec(callback);
         },
 
         category_items: function(callback) {
-            Item.find({ 'category': req.params.id })
+            Item.find({ 'category': id })
               .exec(callback);
         },
 
