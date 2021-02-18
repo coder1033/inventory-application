@@ -1,0 +1,39 @@
+extends layout
+
+block content
+  h1= title
+
+  form(method='POST' action='')
+    if errors 
+      ul.alert.alert-danger
+        for error in errors
+          li.mb-0!= error.msg
+    div.form-group
+      label(for='name') #[h5 Name:]
+      input#name.form-control(type='text', placeholder='Name of Item' name='name' required='true' value=(undefined===item ? '' : item.name) )
+    div.form-group
+      label(for='category') #[h5 Category:]
+      select#category.form-control(type='select', placeholder='Select category' name='category' required='true' )
+        - categories.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+        for category in categories
+          if item
+            //- Handle GET form, where item.category is an object, and POST form, where it is a string.
+            option(
+              value=category._id
+              selected=(
+                category._id.toString()==item.category._id
+                || category._id.toString()==item.category
+              ) ? 'selected' : false
+            ) #{category.name}
+          else
+            option(value=category._id) #{category.name}
+    div.form-group
+      label(for='description') #[h5 Description:]
+      textarea#description.form-control(type='textarea', placeholder='description' name='description' required='true') #{undefined===item ? '' : item.description}
+    div.form-group
+      label(for='price') #[h5 Price:]
+      input#price.form-control(type='number', min=1 placeholder='price' name='price' value=(undefined===item ? '' : item.price) required='true')
+    div.form-group
+      label(for='quantity') #[h5 Quantity:]
+      input#quantity.form-control(type='number', min=0 placeholder='quantity' name='quantity' value=(undefined===item ? '' : item.quantity) required='true')
+    button.btn.btn-primary(type='submit') Submit
